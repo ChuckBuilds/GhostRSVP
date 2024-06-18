@@ -1,0 +1,545 @@
+<form id="initial-form" style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+  <div class="context-text" id="wedding-details">
+    <h2 style="text-align: center;">RSVP</h2><br>
+    <p><b> This is a sample Wedding RSVP Form</b></p><br>
+    <p>It uses N8N, Google Sheets, and Ghost Blog to validate users from an existing list before allowing them to respond.</p><br>
+    <p>The questions are saved to google sheets but also are dynamic in how they appear and can be answered.</p><br>
+    <p>If you want to test it, use the first name: Test and last name: Demo or another name from the above google sheet to see how spouses and kids are accounted for.</p><br></br>
+  </div>
+  <div class="name-fields" style="display: flex; flex-wrap: wrap; gap: 20px;">
+    <div class="field" style="flex: 1 1 100%; min-width: 200px;">
+      <label for="first-name">First Name:</label>
+      <input type="text" id="first-name" name="first-name" required style="width: 100%;">
+    </div>
+    <div class="field" style="flex: 1 1 100%; min-width: 200px;">
+      <label for="last-name">Last Name:</label>
+      <input type="text" id="last-name" name="last-name" required style="width: 100%;">
+    </div>
+    <div class="field" style="flex: 1 1 100%; min-width: 200px;">
+      <label for="email">Email Address:</label>
+      <input type="text" id="email" name="email" required style="width: 100%;">
+    </div>
+  </div>
+  <button type="submit" style="margin-top: 20px; padding: 10px 20px; font-size: 16px;">Submit</button>
+  <p id="error-message" style="color: red; display: none; margin-top: 10px;">Guest Not Found</p>
+</form>
+
+<div id="follow-up-container" style="display:none; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;"></div>
+<p id="success-message" style="color: green; display: none; text-align: center; font-size: 18px; margin-top: 20px;">Your RSVP has been successfully submitted. Thank you!</p>
+<style>
+  .radio-group {
+    display: flex;
+    justify-content: center; /* Center the group as a whole */
+    align-items: center; /* Center items vertically */
+    gap: 10px; /* Space between each radio button and label */
+    margin-top: 10px; /* Optional: Add some space above the group */
+  }
+
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    margin-right: 5px; /* Space between label and radio button */
+    margin-left: 50px; /* Space between previous radio button and label */
+    padding: 0;
+  }
+
+  .custom-radio {
+    width: 25px; /* Set a preferred width */
+    height: 25px; /* Set a preferred height */
+    margin: 0 5px; /* Optional: Add a small margin around the radio buttons */
+    padding: 0; /* Remove any padding around the radio buttons */
+  }
+
+  .small-paragraph {
+    font-size: 18px; /* Adjust the font size as needed */
+  }
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+          // Populate the form fields
+      document.getElementById("first-name").value = firstName;
+      document.getElementById("last-name").value = lastName;
+      document.getElementById("email").value = memberEmail;
+
+      // Store the member email in the formState
+        formState.memberEmail = memberEmail;
+    
+  });
+</script>
+
+<script>
+  let formState = {
+    history: []
+  };
+
+  document.getElementById('initial-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const firstName = document.getElementById('first-name').value;
+    const lastName = document.getElementById('last-name').value;
+    const emailAddress = document.getElementById('email').value;
+    const fullName = `${firstName} ${lastName}`;
+
+    fetch('**INSERT N8N FETCH WEBHOOK**', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        firstName: firstName,
+        lastName: lastName,
+        fullName: fullName,
+        email: emailAddress
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('error-message').style.display = 'none';
+        formState.data = data;
+        saveFormState();
+        showWeddingRSVPForm();
+      } else {
+        document.getElementById('error-message').style.display = 'block';
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  });
+
+  function saveFormState() {
+    const currentFormHTML = document.getElementById('follow-up-container').innerHTML;
+    formState.history.push(currentFormHTML);
+  }
+
+  function goBack() {
+    if (formState.history.length > 0) {
+      const previousFormHTML = formState.history.pop();
+      document.getElementById('follow-up-container').innerHTML = previousFormHTML;
+      document.getElementById('follow-up-container').style.display = 'block';
+      attachEventListeners();
+    }
+  }
+
+  function attachEventListeners() {
+    const followUpForm = document.getElementById('follow-up-form');
+    const busQuestionForm = document.getElementById('bus-question-form');
+    const welcomePartyForm = document.getElementById('welcome-party-form');
+    const funicularTicketForm = document.getElementById('funicular-ticket-form');
+    const dietaryRestrictionsForm = document.getElementById('dietary-restrictions-form');
+
+    if (followUpForm) {
+      followUpForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const guestResponse = document.querySelector('input[name="guest"]:checked').value;
+        let spouseResponse = null;
+        let childResponse = null;
+
+        if (formState.data.spouseFirstName && formState.data.spouseLastName) {
+          spouseResponse = document.querySelector('input[name="spouse"]:checked').value;
+        }
+
+        if (formState.data.childFirstName && formState.data.childLastName) {
+          childResponse = document.querySelector('input[name="child"]:checked').value;
+        }
+
+        formState.responses = {
+          guestFirstName: formState.data.guestFirstName,
+          guestLastName: formState.data.guestLastName,
+          guestResponse: guestResponse,
+          spouseFirstName: formState.data.spouseFirstName,
+          spouseLastName: formState.data.spouseLastName,
+          spouseResponse: spouseResponse,
+          childFirstName: formState.data.childFirstName,
+          childLastName: formState.data.childLastName,
+          childResponse: childResponse
+        };
+
+        saveFormState();
+        showBusQuestion();
+      });
+    }
+
+    if (busQuestionForm) {
+      busQuestionForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const guestBus = document.querySelector('input[name="guestBus"]:checked') ? document.querySelector('input[name="guestBus"]:checked').value : null;
+        const spouseBus = document.querySelector('input[name="spouseBus"]:checked') ? document.querySelector('input[name="spouseBus"]:checked').value : null;
+        const childBus = document.querySelector('input[name="childBus"]:checked') ? document.querySelector('input[name="childBus"]:checked').value : null;
+
+        formState.responses.guestBus = guestBus;
+        formState.responses.spouseBus = spouseBus;
+        formState.responses.childBus = childBus;
+
+        saveFormState();
+        showWelcomePartyQuestions();
+      });
+    }
+
+    if (welcomePartyForm) {
+      welcomePartyForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const guestWelcome = document.querySelector('input[name="guestWelcome"]:checked') ? document.querySelector('input[name="guestWelcome"]:checked').value : null;
+        const spouseWelcome = document.querySelector('input[name="spouseWelcome"]:checked') ? document.querySelector('input[name="spouseWelcome"]:checked').value : null;
+        const childWelcome = document.querySelector('input[name="childWelcome"]:checked') ? document.querySelector('input[name="childWelcome"]:checked').value : null;
+
+        formState.responses.guestWelcome = guestWelcome;
+        formState.responses.spouseWelcome = spouseWelcome;
+        formState.responses.childWelcome = childWelcome;
+
+        saveFormState();
+        showFunicularTicketQuestions();
+      });
+    }
+
+    if (funicularTicketForm) {
+      funicularTicketForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const guestFunicular = document.querySelector('input[name="guestFunicular"]:checked') ? document.querySelector('input[name="guestFunicular"]:checked').value : null;
+        const spouseFunicular = document.querySelector('input[name="spouseFunicular"]:checked') ? document.querySelector('input[name="spouseFunicular"]:checked').value : null;
+        const childFunicular = document.querySelector('input[name="childFunicular"]:checked') ? document.querySelector('input[name="childFunicular"]:checked').value : null;
+
+        formState.responses.guestFunicular = guestFunicular;
+        formState.responses.spouseFunicular = spouseFunicular;
+        formState.responses.childFunicular = childFunicular;
+
+        saveFormState();
+        showDietaryRestrictions();
+      });
+    }
+
+    if (dietaryRestrictionsForm) {
+      dietaryRestrictionsForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const guestDietary = document.getElementById('guestDietary') ? document.getElementById('guestDietary').value : null;
+        const spouseDietary = document.getElementById('spouseDietary') ? document.getElementById('spouseDietary').value : null;
+        const childDietary = document.getElementById('childDietary') ? document.getElementById('childDietary').value : null;
+
+        formState.responses.guestDietary = guestDietary;
+        formState.responses.spouseDietary = spouseDietary;
+        formState.responses.childDietary = childDietary;
+
+        submitRSVP();
+      });
+    }
+  }
+
+  function showWeddingRSVPForm() {
+    const data = formState.data;
+    document.getElementById('initial-form').style.display = 'none'; // Hide the initial form
+    document.getElementById('wedding-details').style.display = 'none'; // Hide the context text
+    document.getElementById('follow-up-container').style.display = 'block'; // Show the follow-up container
+
+    let formContent = `
+      <div class="context-text">
+        <p><b>Thanks ${data.guestFirstName}! Will you be able to attend our Wedding in PLACE on DATE at TIME?</b></p>
+        <p class="small-paragraph">Full Details and Travel Recommendations available on our website. </p><br>
+      </div>
+      <p>Can ${data.guestFirstName} ${data.guestLastName} make it to the wedding?</p>
+      <form id="follow-up-form">
+        <div class="radio-group">
+        <label for="guestYes">Yes</label>
+        <input type="radio" id="guestYes" name="guest" value="yes" class="custom-radio" required>
+        <label for="guestNo">No</label>
+        <input type="radio" id="guestNo" name="guest" value="no" class="custom-radio" required>
+        </div>
+      `;
+
+    if (data.spouseFirstName && data.spouseLastName) {
+      formContent += `
+        <br><p>Can ${data.spouseFirstName} ${data.spouseLastName} make it to the wedding?</p>
+        <div class="radio-group">
+        <label for="spouseYes">Yes</label>
+        <input type="radio" id="spouseYes" name="spouse" value="yes" class="custom-radio" required>
+        <label for="spouseNo">No</label>
+        <input type="radio" id="spouseNo" name="spouse" value="no" class="custom-radio" required>
+        </div>
+      `;
+    }
+
+    if (data.childFirstName && data.childLastName) {
+      formContent += `
+        <br><p>Can ${data.childFirstName} ${data.childLastName} make it to the wedding?</p>
+        <div class="radio-group">
+        <label for="childYes">Yes</label>
+        <input type="radio" id="childYes" name="child" value="yes" class="custom-radio" required>
+        <label for="childNo">No</label>
+        <input type="radio" id="childNo" name="child" value="no" class="custom-radio" required>
+        </div>
+      `;
+    }
+
+    formContent += `
+    <div class="button-container" style="display: flex; justify-content: flex-end; margin-top: 20px;">
+    <button type="submit" style="padding: 10px 20px; font-size: 16px;">Next</button>
+    </div>
+      </form>
+    `;
+
+    document.getElementById('follow-up-container').innerHTML = formContent;
+    attachEventListeners();
+  }
+
+  function showBusQuestion() {
+    const data = formState.data;
+    const guestResponse = formState.responses.guestResponse;
+    const spouseResponse = formState.responses.spouseResponse;
+    const childResponse = formState.responses.childResponse;
+
+    // Check if any of the responses are 'yes' before showing the bus question
+    if (guestResponse === 'yes' || spouseResponse === 'yes' || childResponse === 'yes') {
+        document.getElementById('follow-up-container').style.display = 'block'; // Ensure the follow-up container is visible
+
+    let formContent = `
+      <div class="context-text">
+        <p><b>We plan to provide transportation to and from the venue. Would you like us to save you a seat?</b></p>
+        <p class="small-paragraph">We will be chartering a bus to take people from PLACE to the venue and back. Specific information such as the time to meet will be communicated later.</p><br>
+      </div>
+      <form id="bus-question-form">
+        <p>Will ${data.guestFirstName} ${data.guestLastName} need a seat on the bus?</p>
+        <div class="radio-group">
+        <label for="guestBusYes">Yes</label>
+        <input type="radio" id="guestBusYes" name="guestBus" value="yes" class="custom-radio" required>
+        <label for="guestBusNo">No</label>
+        <input type="radio" id="guestBusNo" name="guestBus" value="no" class="custom-radio" required>
+        </div>
+      `;
+
+    if (spouseResponse === 'yes') {
+      formContent += `
+        <br><p>Will ${data.spouseFirstName} ${data.spouseLastName} need a seat on the bus?</p>
+        <div class="radio-group">
+        <label for="spouseBusYes">Yes</label>
+        <input type="radio" id="spouseBusYes" name="spouseBus" value="yes" class="custom-radio" required>
+        <label for="spouseBusNo">No</label>
+        <input type="radio" id="spouseBusNo" name="spouseBus" value="no" class="custom-radio" required>
+        </div>
+      `;
+    }
+
+    if (childResponse === 'yes') {
+      formContent += `
+        <br><p>Will ${data.childFirstName} ${data.childLastName} need a seat on the bus?</p>
+        <div class="radio-group">
+        <label for="childBusYes">Yes</label>
+        <input type="radio" id="childBusYes" name="childBus" value="yes" class="custom-radio" required>
+        <label for="childBusNo">No</label>
+        <input type="radio" id="childBusNo" name="childBus" value="no" class="custom-radio" required>
+        </div>
+      `;
+    }
+
+    formContent += `
+        <div class="button-container" style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <button type="button" onclick="goBack()" style="padding: 10px 20px; font-size: 16px;">Back</button>
+        <button type="submit" style="padding: 10px 20px; font-size: 16px;">Next</button>
+      </div>
+      </form>
+    `;
+
+    document.getElementById('follow-up-container').innerHTML = formContent;
+    attachEventListeners();
+  } else {
+        // Skip to the next step if the guest response is "no"
+        showWelcomePartyQuestions();
+    }
+}
+
+  function showWelcomePartyQuestions() {
+    const data = formState.data;
+    document.getElementById('follow-up-container').style.display = 'block'; // Ensure the follow-up container is visible
+
+    let formContent = `
+      <div class="context-text">
+        <p><b>Will you also be able to attend the Welcome Party on DATE at TIME?</b></p>
+        <p class="small-paragraph">The Welcome Party will be at the PLACE.</p><br>
+      </div>
+      <form id="welcome-party-form">
+        <p>Can ${data.guestFirstName} ${data.guestLastName} make it to the welcome party?</p>
+        <div class="radio-group">
+        <label for="guestWelcomeYes">Yes</label>
+        <input type="radio" id="guestWelcomeYes" name="guestWelcome" value="yes" class="custom-radio" required>
+        <label for="guestWelcomeNo">No</label>
+        <input type="radio" id="guestWelcomeNo" name="guestWelcome" value="no" class="custom-radio" required>
+        </div>
+      `;
+
+    if (data.spouseFirstName && data.spouseLastName) {
+      formContent += `
+        <br><p>Can ${data.spouseFirstName} ${data.spouseLastName} make it to the welcome party?</p>
+        <div class="radio-group">
+        <label for="spouseWelcomeYes">Yes</label>
+        <input type="radio" id="spouseWelcomeYes" name="spouseWelcome" value="yes" class="custom-radio" required>
+        <label for="spouseWelcomeNo">No</label>
+        <input type="radio" id="spouseWelcomeNo" name="spouseWelcome" value="no" class="custom-radio" required>
+        </div>
+      `;
+    }
+
+    if (data.childFirstName && data.childLastName) {
+      formContent += `
+        <br><p>Can ${data.childFirstName} ${data.childLastName} make it to the welcome party?</p>
+        <div class="radio-group">
+        <label for="childWelcomeYes">Yes</label>
+        <input type="radio" id="childWelcomeYes" name="childWelcome" value="yes" class="custom-radio" required>
+        <label for="childWelcomeNo">No</label>
+        <input type="radio" id="childWelcomeNo" name="childWelcome" value="no" class="custom-radio" required>
+        </div>
+      `;
+    }
+
+    formContent += `
+    <div class="button-container" style="display: flex; justify-content: space-between; margin-top: 20px;">
+    <button type="button" onclick="goBack()" style="padding: 10px 20px; font-size: 16px;">Back</button>
+    <button type="submit" style="padding: 10px 20px; font-size: 16px;">Next</button>
+    </div>
+      </form>
+    `;
+
+    document.getElementById('follow-up-container').innerHTML = formContent;
+    attachEventListeners();
+  }
+
+  function showFunicularTicketQuestions() {
+    const data = formState.data;
+    const guestWelcome = formState.responses.guestWelcome;
+    const spouseWelcome = formState.responses.spouseWelcome;
+    const childWelcome = formState.responses.childWelcome;
+
+    // Check if any of the responses are 'yes' before showing the funicular question
+    if (guestWelcome === 'yes' || spouseWelcome === 'yes' || childWelcome === 'yes') {
+        document.getElementById('follow-up-container').style.display = 'block'; // Ensure the follow-up container is visible
+
+    let formContent = `
+      <div class="context-text">
+        <p><b>Would you like a ticket to ride the Funicular (Cable Railway with a view of the city) for the Welcome Party?</b></p>
+        <p class="small-paragraph">We plan to provide tickets but understand some locals may prefer to navigate themselves.</p><br>
+      </div>
+      <form id="funicular-ticket-form">
+        <p>Does ${data.guestFirstName} ${data.guestLastName} need a ticket for the funicular?</p>
+        <div class="radio-group">
+        <label for="guestFunicularYes">Yes</label>
+        <input type="radio" id="guestFunicularYes" name="guestFunicular" value="yes" class="custom-radio" required>
+        <label for="guestFunicularNo">No</label>
+        <input type="radio" id="guestFunicularNo" name="guestFunicular" value="no" class="custom-radio" required>
+        </div>
+      `;
+
+    if (spouseWelcome === 'yes') {
+      formContent += `
+        <br><p>Does ${data.spouseFirstName} ${data.spouseLastName} need a ticket for the funicular?</p>
+        <div class="radio-group">
+        <label for="spouseFunicularYes">Yes</label>
+        <input type="radio" id="spouseFunicularYes" name="spouseFunicular" value="yes" class="custom-radio" required>
+        <label for="spouseFunicularNo">No</label>
+        <input type="radio" id="spouseFunicularNo" name="spouseFunicular" value="no" class="custom-radio" required>
+        </div>
+      `;
+    }
+
+    if (childWelcome === 'yes') {
+      formContent += `
+        <br><p>Does ${data.childFirstName} ${data.childLastName} need a ticket for the funicular?</p>
+        <div class="radio-group">
+        <label for="childFunicularYes">Yes</label>
+        <input type="radio" id="childFunicularYes" name="childFunicular" value="yes" class="custom-radio" required>
+        <label for="childFunicularNo">No</label>
+        <input type="radio" id="childFunicularNo" name="childFunicular" value="no" class="custom-radio" required>
+        </div>
+      `;
+    }
+
+    formContent += `
+    <div class="button-container" style="display: flex; justify-content: space-between; margin-top: 20px;">
+    <button type="button" onclick="goBack()" style="padding: 10px 20px; font-size: 16px;">Back</button>
+    <button type="submit" style="padding: 10px 20px; font-size: 16px;">Next</button>
+    </div>
+      </form>
+    `;
+
+    document.getElementById('follow-up-container').innerHTML = formContent;
+    attachEventListeners();
+    } else {
+        // Skip to the next step if the welcome party responses are all "no"
+        showDietaryRestrictions();
+    }
+  }
+
+  function showDietaryRestrictions() {
+    const data = formState.data;
+    const guestResponse = formState.responses.guestResponse;
+    const guestWelcome = formState.responses.guestWelcome;
+    const spouseResponse = formState.responses.spouseResponse;
+    const spouseWelcome = formState.responses.spouseWelcome;
+    const childResponse = formState.responses.childResponse;
+    const childWelcome = formState.responses.childWelcome;
+
+    // Check if any of the responses for Wedding or Welcome Party are 'yes' before showing the dietary restrictions question
+    if (
+        guestResponse === 'yes' || guestWelcome === 'yes' ||
+        (spouseResponse && spouseResponse === 'yes') || (spouseWelcome && spouseWelcome === 'yes') ||
+        (childResponse && childResponse === 'yes') || (childWelcome && childWelcome === 'yes')
+    ) {
+        document.getElementById('follow-up-container').style.display = 'block'; // Ensure the follow-up container is visible
+
+    let formContent = `
+      <div class="context-text">
+        <p><b>Please let us know of any dietary restrictions:</b></p>
+        <p class="small-paragraph">We will have the menus posted on our website in advance for both planned meals and will contact you about alternatives.</p><br>
+      </div>
+      <form id="dietary-restrictions-form">
+        <p>Please provide any dietary restrictions for ${data.guestFirstName} ${data.guestLastName}:</p>
+        <input type="text" id="guestDietary" name="guestDietary" placeholder="e.g., vegetarian, allergies">
+      `;
+
+    if (data.spouseFirstName && data.spouseLastName) {
+      formContent += `
+        <br><p>Please provide any dietary restrictions for ${data.spouseFirstName} ${data.spouseLastName}:</p>
+        <input type="text" id="spouseDietary" name="spouseDietary" placeholder="e.g., vegetarian, allergies">
+      `;
+    }
+
+    if (data.childFirstName && data.childLastName) {
+      formContent += `
+        <br><p>Please provide any dietary restrictions for ${data.childFirstName} ${data.childLastName}:</p>
+        <input type="text" id="childDietary" name="childDietary" placeholder="e.g., vegetarian, allergies">
+      `;
+    }
+
+    formContent += `
+    <div class="button-container" style="display: flex; justify-content: space-between; margin-top: 20px;">
+    <button type="button" onclick="goBack()" style="padding: 10px 20px; font-size: 16px;">Back</button>
+    <button type="submit" style="padding: 10px 20px; font-size: 16px;">Submit</button>
+    </div>
+      </form>
+    `;
+
+    document.getElementById('follow-up-container').innerHTML = formContent;
+    attachEventListeners();
+        } else {
+        // Skip to the final submission if all the responses to Wedding and Welcome Party are "no"
+        submitRSVP();
+    }
+  }
+
+  function submitRSVP() {
+    // Include the member email in the responses object
+    formState.responses.memberEmail = formState.memberEmail;
+
+    fetch('**INSERT RECEIVING N8N WEBHOOK**', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formState.responses)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('success-message').style.display = 'block';
+      } else {
+        alert('There was an error submitting your RSVP. Please try again.');
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
+</script>

@@ -1,0 +1,1209 @@
+{
+  "name": "GhostRSVPDemo",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "9bcf3a2e-c4ff-489c-8b6f-1adade2480a7",
+              "leftValue": "={{ $json['Child First'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "579b0bfe-59ee-4a50-a7dc-9f518c9f162d",
+              "leftValue": "={{ $json['Child Last'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "d1ce2d60-a93a-4e58-aef0-8c12d621af37",
+      "name": "If Child",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        380
+      ],
+      "notes": "IF Spouse"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"guestFirstName\": \"{{$json[\"First Name\"]}}\",\n  \"guestLastName\": \"{{$json[\"Last Name\"]}}\",\n  \"spouseFirstName\": \"{{$json[\"Spouse First\"]}}\",\n  \"spouseLastName\": \"{{$json[\"Spouse Last\"]}}\"\n}\n",
+        "options": {}
+      },
+      "id": "ef1ad26e-bc91-4414-bb01-961758c35477",
+      "name": "Return Name & Spouse",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        520
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"guestFirstName\": \"{{$json[\"First Name\"]}}\",\n  \"guestLastName\": \"{{$json[\"Last Name\"]}}\",\n  \"spouseFirstName\": \"{{$json[\"Spouse First\"]}}\",\n  \"spouseLastName\": \"{{$json[\"Spouse Last\"]}}\",\n  \"childFirstName\": \"{{$json[\"Child First\"]}}\",\n  \"childLastName\": \"{{$json[\"Child Last\"]}}\"\n}\n",
+        "options": {}
+      },
+      "id": "7579dc5f-7511-451c-90cf-487ffee6a6ff",
+      "name": "Return Name, Spouse, & Child",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1940,
+        260
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "9bcf3a2e-c4ff-489c-8b6f-1adade2480a7",
+              "leftValue": "={{ $json['Spouse First'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "579b0bfe-59ee-4a50-a7dc-9f518c9f162d",
+              "leftValue": "={{ $json['Spouse Last'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "2f77ffe6-fc05-40f0-b207-f2e74e4d503d",
+      "name": "If Spouse",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        600
+      ],
+      "notes": "IF Spouse"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1JPzBO8it9WDq33uG6QVUb3BSvW0mssAdZgaRSael314",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JPzBO8it9WDq33uG6QVUb3BSvW0mssAdZgaRSael314/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Full Name",
+              "lookupValue": "={{ $json.body.fullName }}"
+            },
+            {
+              "lookupColumn": "First Name",
+              "lookupValue": "={{ $json.body.firstName }}"
+            },
+            {
+              "lookupColumn": "Last Name",
+              "lookupValue": "={{ $json.body.lastName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "44051ac9-3ca9-4eea-baff-471394e4cd65",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.3,
+      "position": [
+        1380,
+        660
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE OAUTH",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"guestFirstName\": \"{{$json[\"First Name\"]}}\",\n  \"guestLastName\": \"{{$json[\"Last Name\"]}}\"\n}",
+        "options": {}
+      },
+      "id": "b004ff90-4bbb-4863-9c21-71736e64a136",
+      "name": "Return Name",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1900,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "4511aecb-24bc-42de-9331-da252e584a05",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cdeff4ab-dda9-4a83-861f-1ad59d3de234",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        820
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.guestFirstName, body.guestLastName",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": " body.guestResponse, body.guestWelcome, body.guestFunicular, body.guestBus, body.guestDietary, body.dateTime",
+        "options": {}
+      },
+      "id": "6e98bed0-babd-4e80-9d2e-7ac237895382",
+      "name": "Guest Split",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.spouseFirstName, body.spouseLastName",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "body.spouseResponse, body.spouseBus, body.spouseWelcome, body.spouseFunicular, body.spouseDietary, body.dateTime",
+        "options": {}
+      },
+      "id": "1f67bdd1-b399-43fe-98e8-9cfa2a9d692f",
+      "name": "Spouse Split",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        1320
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JPzBO8it9WDq33uG6QVUb3BSvW0mssAdZgaRSael314",
+          "mode": "list",
+          "cachedResultName": "RSVP Sheet Example",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JPzBO8it9WDq33uG6QVUb3BSvW0mssAdZgaRSael314/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1REtSMu5TodQuhAcwjCSgS5DQeMP0V4SF4fK5-mzkQWU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Wedding RSVP": "={{ $json['body.guestResponse'] }}",
+            "Wedding Bus": "={{ $json['body.guestBus'] }}",
+            "Welcome party Ticket": "={{ $json['body.guestFunicular'] }}",
+            "Welcome Party RSVP": "={{ $json['body.guestWelcome'] }}",
+            "Dietary restrictions": "={{ $json['body.guestDietary'] }}",
+            "Full Name": "={{ $json['body.guestFirstName'] }} {{ $json['body.guestLastName'] }}",
+            "Time Stamp": "={{ $json['body.dateTime'] }}"
+          },
+          "matchingColumns": [
+            "Full Name"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Spouse First",
+              "displayName": "Spouse First",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spouse Last",
+              "displayName": "Spouse Last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Child First",
+              "displayName": "Child First",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Child Last",
+              "displayName": "Child Last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Wedding RSVP",
+              "displayName": "Wedding RSVP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Wedding Bus",
+              "displayName": "Wedding Bus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Welcome Party RSVP",
+              "displayName": "Welcome Party RSVP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Welcome party Ticket",
+              "displayName": "Welcome party Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dietary restrictions",
+              "displayName": "Dietary restrictions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time Stamp",
+              "displayName": "Time Stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0ff51748-7edb-4419-8286-d165a83a156b",
+      "name": "Guest Google Sheet Update",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.3,
+      "position": [
+        1360,
+        1140
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE OAUTH",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JPzBO8it9WDq33uG6QVUb3BSvW0mssAdZgaRSael314",
+          "mode": "list",
+          "cachedResultName": "RSVP Sheet Example",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JPzBO8it9WDq33uG6QVUb3BSvW0mssAdZgaRSael314/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1REtSMu5TodQuhAcwjCSgS5DQeMP0V4SF4fK5-mzkQWU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $json['body.spouseFirstName'] }} {{ $json['body.spouseLastName'] }}",
+            "Wedding RSVP": "={{ $json['body.spouseResponse'] }}",
+            "Wedding Bus": "={{ $json['body.spouseBus'] }}",
+            "Welcome Party RSVP": "={{ $json['body.spouseWelcome'] }}",
+            "Welcome party Ticket": "={{ $json['body.spouseFunicular'] }}",
+            "Dietary restrictions": "={{ $json['body.spouseDietary'] }}",
+            "Time Stamp": "={{ $json['body.dateTime'] }}"
+          },
+          "matchingColumns": [
+            "Full Name"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Spouse First",
+              "displayName": "Spouse First",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spouse Last",
+              "displayName": "Spouse Last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Child First",
+              "displayName": "Child First",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Child Last",
+              "displayName": "Child Last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Wedding RSVP",
+              "displayName": "Wedding RSVP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Wedding Bus",
+              "displayName": "Wedding Bus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Welcome Party RSVP",
+              "displayName": "Welcome Party RSVP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Welcome party Ticket",
+              "displayName": "Welcome party Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dietary restrictions",
+              "displayName": "Dietary restrictions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time Stamp",
+              "displayName": "Time Stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0d07821d-d7bb-435d-b54c-b3f60bb991fc",
+      "name": "Spouse Google Sheet Update",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.3,
+      "position": [
+        1360,
+        1320
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE OAUTH",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.childFirstName, body.childLastName",
+        "include": "selectedOtherFields",
+        "fieldsToInclude": "body.childResponse, body.childWelcome, body.childFunicular, body.childBus, body.childDietary, body.dateTime, body.dateTime",
+        "options": {}
+      },
+      "id": "0e6ffce2-1654-448f-9068-b1de1cc68209",
+      "name": "Child",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        1500
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1JPzBO8it9WDq33uG6QVUb3BSvW0mssAdZgaRSael314",
+          "mode": "list",
+          "cachedResultName": "RSVP Sheet Example",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JPzBO8it9WDq33uG6QVUb3BSvW0mssAdZgaRSael314/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1REtSMu5TodQuhAcwjCSgS5DQeMP0V4SF4fK5-mzkQWU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $json['body.childFirstName'] }} {{ $json['body.childLastName'] }}",
+            "Wedding RSVP": "={{ $json['body.childResponse'] }}",
+            "Welcome Party RSVP": "={{ $json['body.childWelcome'] }}",
+            "Wedding Bus": "={{ $json['body.childBus'] }}",
+            "Dietary restrictions": "={{ $json['body.childDietary'] }}",
+            "Welcome party Ticket": "={{ $json['body.childFunicular'] }}",
+            "Time Stamp": "={{ $json['body.dateTime'] }}"
+          },
+          "matchingColumns": [
+            "Full Name"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Spouse First",
+              "displayName": "Spouse First",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Spouse Last",
+              "displayName": "Spouse Last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Child First",
+              "displayName": "Child First",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Child Last",
+              "displayName": "Child Last",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Wedding RSVP",
+              "displayName": "Wedding RSVP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Wedding Bus",
+              "displayName": "Wedding Bus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Welcome Party RSVP",
+              "displayName": "Welcome Party RSVP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Welcome party Ticket",
+              "displayName": "Welcome party Ticket",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Dietary restrictions",
+              "displayName": "Dietary restrictions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time Stamp",
+              "displayName": "Time Stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fd22f722-1760-4da6-8ccf-1a0d0636ced1",
+      "name": "Spouse Google Sheet Update1",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.3,
+      "position": [
+        1360,
+        1520
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "GOOGLE OAUTH",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": false\n}",
+        "options": {}
+      },
+      "id": "8544bbe5-6b4e-42b8-8628-7f5922afa616",
+      "name": "Respond to Webhook - FAILED",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1780,
+        940
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"success\": true\n}",
+        "options": {}
+      },
+      "id": "89fc1f32-6671-4910-998a-e2424af8b366",
+      "name": "Respond to Webhook - Success!",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1700,
+        1320
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Function to capitalize the first letter of each word\nfunction titleCase(name) {\n    if (typeof name === 'string') {\n        return name.replace(/\\b\\w+/g, txt => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase());\n    } else {\n        return name;\n    }\n}\n\n// Get the input data\nconst firstName = $json[\"body\"][\"firstName\"];\nconst lastName = $json[\"body\"][\"lastName\"];\nconst fullName = $json[\"body\"][\"fullName\"];\n\n// Convert the names to title case\nconst titleCaseFirstName = titleCase(firstName);\nconst titleCaseLastName = titleCase(lastName);\nconst titleCaseFullName = titleCase(fullName);\n\n// Set the output data\nreturn {\n    json: {\n        \"body\": {\n            firstName: titleCaseFirstName,\n            lastName: titleCaseLastName,\n            fullName: titleCaseFullName\n        }\n    }\n};\n"
+      },
+      "id": "915029f2-b0f2-489c-b979-99916308e90d",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        620
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst formattedDateTime = now.toISOString().slice(0, 19).replace('T', ' ');\nreturn [{ body: { dateTime: formattedDateTime } }];\n"
+      },
+      "id": "461317d2-7789-4dc9-821b-5d3c12aeef26",
+      "name": "Code1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        840
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "multiplex",
+        "options": {}
+      },
+      "id": "6677e41c-eab0-46cf-a548-417ad1e04d3a",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2.1,
+      "position": [
+        780,
+        1320
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "noreply@domain.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "RSVP Received",
+        "text": "=",
+        "html": "={{ $json.emailContent }}"
+      },
+      "id": "0df5700d-042c-4dfe-8e49-bdcd87407b21",
+      "name": "Mailgun",
+      "type": "n8n-nodes-base.mailgun",
+      "typeVersion": 1,
+      "position": [
+        1000,
+        1720
+      ],
+      "credentials": {
+        "mailgunApi": {
+          "id": "MAILGUNAPI",
+          "name": "Mailgun account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Input data\nconst inputData = $json.body;\n\n// Function to check if a value is valid (not null, undefined, empty, or '[undefined]')\nfunction isValid(value) {\n  return value && value !== 'null' && value !== '[undefined]' && value !== '';\n}\n\n// Generate the guest information section\nlet memberEmail = $json.body.memberEmail \n\nlet emailContent = `\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>RSVP Confirmation</title>\n    <style>\n        body {\n            font-family: Arial, sans-serif;\n            margin: 0;\n            padding: 20px;\n            background-color: #f9f9f9;\n        }\n        .container {\n            background-color: #ffffff;\n            padding: 20px;\n            border-radius: 8px;\n            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n        }\n        h2 {\n            text-align: center;\n            color: #333;\n        }\n        p {\n            font-size: 16px;\n            line-height: 1.5;\n            color: #666;\n        }\n        .section {\n            margin-bottom: 20px;\n        }\n        .section-title {\n            font-size: 18px;\n            font-weight: bold;\n            color: #333;\n        }\n    </style>\n</head>\n<body>\n    <div class=\"container\">\n        <h2>RSVP Confirmation</h2>\n        \n        <div class=\"section\">\n            <p class=\"section-title\">Guest Information:</p>\n            <p>\n                Name: ${inputData.guestFirstName} ${inputData.guestLastName}<br>\n                Attending Wedding: ${inputData.guestResponse}<br>\n                Attending Welcome Party: ${inputData.guestWelcome}<br>\n                Needs Seat on Bus: ${inputData.guestBus}<br>\n                Needs Funicular Ticket: ${inputData.guestFunicular}<br>\n                Dietary Restrictions: ${inputData.guestDietary || 'None'}<br>\n            </p>\n        </div>\n`;\n\n// Add spouse section if valid\nif (isValid(inputData.spouseFirstName) && isValid(inputData.spouseLastName)) {\n  emailContent += `\n        <div class=\"section\">\n            <p class=\"section-title\">Spouse Information:</p>\n            <p>\n                Name: ${inputData.spouseFirstName} ${inputData.spouseLastName}<br>\n                Attending Wedding: ${inputData.spouseResponse}<br>\n                Attending Welcome Party: ${inputData.spouseWelcome}<br>\n                Needs Seat on Bus: ${inputData.spouseBus}<br>\n                Needs Funicular Ticket: ${inputData.spouseFunicular}<br>\n                Dietary Restrictions: ${inputData.spouseDietary || 'None'}\n            </p>\n        </div>\n  `;\n}\n\n// Add child section if valid\nif (isValid(inputData.childFirstName) && isValid(inputData.childLastName)) {\n  emailContent += `\n        <div class=\"section\">\n            <p class=\"section-title\">Child Information:</p>\n            <p>\n                Name: ${inputData.childFirstName} ${inputData.childLastName}<br>\n                Attending Wedding: ${inputData.childResponse}<br>\n                Attending Welcome Party: ${inputData.childWelcome}<br>\n                Needs Seat on Bus: ${inputData.childBus}<br>\n                Needs Funicular Ticket: ${inputData.childFunicular}<br>\n                Dietary Restrictions: ${inputData.childDietary || 'None'}\n            </p>\n        </div>\n  `;\n}\n\nemailContent += `\n        <p>Thank you for your RSVP! We look forward to celebrating with you.</p><br>\n        <p>For more information please check <a href=\"https://www.website.com/\">https://www.website.com/</a></p>\n    </div>\n</body>\n</html>\n`;\n\n// Return the processed data for the next node\nreturn {\n  json: {\n    emailContent: emailContent,\n    email: memberEmail\n  }\n};\n"
+      },
+      "id": "eea92fdf-cc60-4176-bdab-4fd5011711af",
+      "name": "Code2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        580,
+        1720
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e916c7a9-34cb-4c64-aea3-54aededb4e29",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "aaf93216-eb68-4e19-8743-36e21f1c378f",
+      "name": "Fetch Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        840,
+        560
+      ],
+      "webhookId": "e916c7a9-34cb-4c64-aea3-54aededb4e29"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fc2421ec-f1bd-4124-9e98-ce7be0ea1b22",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "72b169cf-a3e3-4987-9d14-d53ea5f8193a",
+      "name": "RECEIVING Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        400,
+        1300
+      ],
+      "webhookId": "fc2421ec-f1bd-4124-9e98-ce7be0ea1b22"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If Child": {
+      "main": [
+        [
+          {
+            "node": "Return Name, Spouse, & Child",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Name & Spouse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Spouse": {
+      "main": [
+        [
+          {
+            "node": "If Child",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "If Spouse",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook - FAILED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guest Split": {
+      "main": [
+        [
+          {
+            "node": "Guest Google Sheet Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spouse Split": {
+      "main": [
+        [
+          {
+            "node": "Spouse Google Sheet Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Child": {
+      "main": [
+        [
+          {
+            "node": "Spouse Google Sheet Update1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guest Google Sheet Update": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook - Success!",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spouse Google Sheet Update": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook - Success!",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spouse Google Sheet Update1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook - Success!",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Guest Split",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Spouse Split",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Child",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Mailgun",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RECEIVING Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4b37ba35-27f0-4872-bd90-22a9fa58b6cd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "56f921396fa8933e7e115f8fec514fbe227dd40da2ab6921b82fcfad440eb07c"
+  },
+  "id": "IUe8eSqCxtB5N1fE",
+  "tags": []
+}
